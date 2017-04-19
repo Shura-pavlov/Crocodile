@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.concurrent.ExecutionException;
 
@@ -68,12 +67,13 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
 
     public boolean onTouch(View v, MotionEvent event) {
 
-        mX = event.getX();
-        mY = event.getY();
+        if(MotionEvent.ACTION_DOWN == event.getAction()) {
+            mX = event.getX();
+            mY = event.getY();
 
-        bitmap = Graph.getBitmap(mX, mY, bitmap, colour,cookies);
-        image.setImageBitmap(bitmap);
-
+            bitmap = Graph.getBitmap(mX, mY, bitmap, colour, cookies);
+            image.setImageBitmap(bitmap);
+        }
         return true;
     }
 

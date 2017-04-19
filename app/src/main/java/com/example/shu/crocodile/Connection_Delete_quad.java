@@ -49,14 +49,6 @@ public class Connection_Delete_quad   extends AsyncTask<String, Void, Void> {
                 if(c.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     is = c.getInputStream();
-
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-
-                    //передача запроса(?)
-                    while ((bytesRead = is.read(buffer)) != -1) {
-                        baos.write(buffer, 0, bytesRead);
-                    }
                 }
             }
 

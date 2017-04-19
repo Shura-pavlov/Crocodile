@@ -49,14 +49,6 @@ public class Connection_Post_quad_paint  extends AsyncTask<String, Void, Void> {
                 if(c.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     is = c.getInputStream();
-
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-
-                    //передача запроса(?)
-                    while ((bytesRead = is.read(buffer)) != -1) {
-                        baos.write(buffer, 0, bytesRead);
-                    }
                 }
             }
 
@@ -64,7 +56,9 @@ public class Connection_Post_quad_paint  extends AsyncTask<String, Void, Void> {
         } catch (IOException e) {
         } catch (Exception e) {
         } finally {
-            c.disconnect();
+            if(c != null) {
+                c.disconnect();
+            }
         }
         return null;
     }

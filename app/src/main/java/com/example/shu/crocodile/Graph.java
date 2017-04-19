@@ -106,19 +106,20 @@ public class Graph {
             paint.setStyle(Paint.Style.FILL);
 
             paint.setColor(Color.parseColor(col));
+
             canvas.drawRect(xd + 1, yd + 1, xd + dpToPx(size_pix) - 1, yd + dpToPx(size_pix) - 1, paint);
 
             if (c < 13) {
                 Connection_Post_quad_paint quad = new Connection_Post_quad_paint();
                 quad.cookie = cookies;
                 quad.urll = "http://croco.us-west-2.elasticbeanstalk.com/api/lobby/quad/" + Integer.toString(number);
-                quad.execute("number=" + Integer.toString(number) + "&color=" + Integer.toString(c));
+                quad.execute("color=" + Integer.toString(c));
 
             } else {
                 Connection_Delete_quad quad = new Connection_Delete_quad();
                 quad.cookie = cookies;
                 quad.urll = "http://croco.us-west-2.elasticbeanstalk.com/api/lobby/quad/" + Integer.toString(number);
-                quad.execute("number=" + Integer.toString(number) + "&color=" + Integer.toString(c));
+                quad.execute("color=" + Integer.toString(c));
 
             }
         }

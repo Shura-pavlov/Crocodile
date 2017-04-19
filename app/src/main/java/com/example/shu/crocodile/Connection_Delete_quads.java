@@ -51,7 +51,7 @@ public class Connection_Delete_quads   extends AsyncTask<Void, Void, Void> {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     is = c.getInputStream();
 
-                    byte[] buffer = new byte[8192];
+                    byte[] buffer = new byte[2];
                     int bytesRead;
 
                     //передача запроса(?)

@@ -48,7 +48,7 @@ public class Connection_Post_Queue extends AsyncTask<Void, Void, String> {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 is = c.getInputStream();
 
-                byte[] buffer = new byte[8192];
+                byte[] buffer = new byte[2];
                 int bytesRead;
 
                 //передача запроса(?)
