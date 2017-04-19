@@ -1,5 +1,6 @@
 package com.example.shu.crocodile;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 
 public class ArtistActivity extends AppCompatActivity implements View.OnTouchListener {
 
+    String cookies;
     ImageView image;
     float mX, mY;
     Bitmap bitmap = null;
@@ -22,8 +24,11 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
         setContentView(R.layout.activity_artist);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        Intent intent = getIntent();
+        cookies = intent.getStringExtra("cook");
+
         image = (ImageView)findViewById(R.id.imageView);
-        bitmap = Graph.newBitmap(bitmap);
+        bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
         image.setOnTouchListener(this);
 
@@ -33,7 +38,7 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
 
         mX = event.getX();
         mY = event.getY();
-        bitmap = Graph.getBitmap(mX, mY, bitmap, colour);
+        bitmap = Graph.getBitmap(mX, mY, bitmap, colour,cookies);
         image.setImageBitmap(bitmap);
 
         return true;
@@ -96,7 +101,7 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
     }
 
     public void onClick_clear(View view) {
-        bitmap = Graph.newBitmap(bitmap);
+        bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
     }
 }
