@@ -8,6 +8,13 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.util.concurrent.ExecutionException;
 
 
 public class ArtistActivity extends AppCompatActivity implements View.OnTouchListener {
@@ -27,6 +34,31 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
         Intent intent = getIntent();
         cookies = intent.getStringExtra("cook");
 
+        Connection_Get_keyword getKeyword = new Connection_Get_keyword();
+        getKeyword.cookie = cookies;
+        getKeyword.execute("http://croco.us-west-2.elasticbeanstalk.com/api/lobby/keyword.json");
+
+        String result_keyword;
+        try{
+            result_keyword = getKeyword.get();
+        } catch (InterruptedException e) {
+            result_keyword = "err";
+        } catch (ExecutionException e) {
+            result_keyword = "err";
+        }
+
+        //JSON вывод параметра в String
+        try {
+            //слово художника
+            JSONObject json = new JSONObject(result_keyword);
+            result_keyword = json.getString("keyword");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        TextView text = (TextView)findViewById(R.id.textView2);
+        text.setText(result_keyword);
+
         image = (ImageView)findViewById(R.id.imageView);
         bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
@@ -38,6 +70,7 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
 
         mX = event.getX();
         mY = event.getY();
+
         bitmap = Graph.getBitmap(mX, mY, bitmap, colour,cookies);
         image.setImageBitmap(bitmap);
 
@@ -101,7 +134,9 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
     }
 
     public void onClick_clear(View view) {
+
         bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
+
     }
 }

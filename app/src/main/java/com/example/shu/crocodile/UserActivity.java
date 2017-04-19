@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.concurrent.ExecutionException;
 
 public class UserActivity extends AppCompatActivity {
@@ -25,7 +28,7 @@ public class UserActivity extends AppCompatActivity {
         Connection_Get_Game game = new Connection_Get_Game();
         game.cookie = cookies;
         game.execute("http://croco.us-west-2.elasticbeanstalk.com/api/lobby/game");
-        String result = "";
+        String result = "0";
         try{
             result = game.get();
         } catch (InterruptedException e) {
@@ -33,8 +36,17 @@ public class UserActivity extends AppCompatActivity {
         } catch (ExecutionException e) {
             result = "err";
         }
+        String data="";
+
+        try {
+            JSONObject json = new JSONObject(result);
+            data = json.getString("quadsRemoved");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         TextView text = (TextView)findViewById(R.id.textView3);
-        text.setText(result);
+        text.setText(data);
     }
 }

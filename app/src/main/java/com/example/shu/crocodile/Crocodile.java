@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.concurrent.ExecutionException;
 
 public class Crocodile extends AppCompatActivity {
@@ -26,7 +30,7 @@ public class Crocodile extends AppCompatActivity {
 
         String result_id;
         try{
-            result_id = getPlayerId.get();  //id игрока
+            result_id = getPlayerId.get();
             cookies = getPlayerId.cookie;   //сохранение куки
         }
         catch(InterruptedException e){
@@ -36,11 +40,21 @@ public class Crocodile extends AppCompatActivity {
             result_id = "error2_Execution_Croco";
         }
 
+        //JSON вывод параметра в String
+        try {
+            //id игрока
+            JSONObject json = new JSONObject(result_id);
+            result_id = json.getString("id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         //вывод (проверка)
         TextView text = (TextView)findViewById(R.id.textView5);
         text.setText(result_id);
     }
-
+/*
+тест активити
     public void onClickArtistTest(View view) {
         Intent intent = new Intent(Crocodile.this, ArtistActivity.class);
         startActivity(intent);
@@ -50,7 +64,7 @@ public class Crocodile extends AppCompatActivity {
         Intent intent = new Intent(Crocodile.this, UserActivity.class);
         startActivity(intent);
     }
-
+*/
     public void onClick_start(View view) throws ExecutionException, InterruptedException {
 
         //проверка введенного имени
@@ -67,45 +81,54 @@ public class Crocodile extends AppCompatActivity {
             getPlayerName.cookie = cookies;     //определение куки
             getPlayerName.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/name.json");
 
-            String result;
+            String result_name;
             try {
-                result = getPlayerName.get();
+                result_name = getPlayerName.get();
             } catch (InterruptedException e) {
-                result = "error_Interrupted_Croco";
+                result_name = "error_Interrupted_Croco";
             } catch (ExecutionException e) {
-                result = "error2_Execution_Croco";
+                result_name = "error2_Execution_Croco";
             }
+
+            //JSON вывод параметра в String
+            try {
+                //имя игрока
+                JSONObject json = new JSONObject(result_name);
+                result_name = json.getString("name");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
             Connection_Post_Queue getQueuePlayer = new Connection_Post_Queue();
             getQueuePlayer.cookie = cookies;
             getQueuePlayer.execute();
-            String resultq;
-            try{
-                getQueuePlayer.get();
-                resultq = "queue";
-            }catch (InterruptedException e) {
-                resultq = "error_Interrupted_Croco";
-            } catch (ExecutionException e) {
-                resultq = "error2_Execution_Croco";
+
+
+            String result_queue = "0";
+            while (Integer.parseInt(result_queue) < 2 ){
+                Connectional_Get_Role getPlayerRole = new Connectional_Get_Role();
+                getPlayerRole.cookie = cookies;
+                getPlayerRole.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/role.json");
+
+                try {
+                    result_queue = getPlayerRole.get();
+                } catch (InterruptedException e) {
+                    result_queue = "-1";
+                } catch (ExecutionException e) {
+                    result_queue = "-2";
+                }
+
+                //JSON вывод параметра в String
+                try {
+                   //роль игрока
+                   JSONObject json = new JSONObject(result_queue);
+                    result_queue = json.getString("roleCode");
+                } catch (JSONException e) {
+                   e.printStackTrace();
+                }
             }
-
-            result = "0";
-
-               while (Integer.parseInt(result) <2 ){
-                    Connectional_Get_Role getPlayerRole = new Connectional_Get_Role();
-                    getPlayerRole.cookie = cookies;
-                    getPlayerRole.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/role.json");
-
-                    try {
-                        result = getPlayerRole.get();
-                        result = result.substring(result.indexOf(":")+1,result.indexOf("}"));
-                    } catch (InterruptedException e) {
-                        result = "-1";
-                    } catch (ExecutionException e) {
-                        result = "-2";
-                    }
-               }
-                switch(Integer.parseInt(result)){
+                switch(Integer.parseInt(result_queue)){
                     case 2:{
                         Intent intent = new Intent(Crocodile.this, UserActivity.class);
                         intent.putExtra("cook",cookies);
@@ -123,7 +146,7 @@ public class Crocodile extends AppCompatActivity {
 
             //вывод (проверка)
             TextView text = (TextView) findViewById(R.id.textView5);
-            text.setText(result);
+            text.setText(result_queue);
         }else{
             name.setHint("Некорректное имя");
         }

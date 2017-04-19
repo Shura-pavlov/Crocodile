@@ -23,7 +23,6 @@ public class Graph {
         return(int)(px / Resources.getSystem().getDisplayMetrics().density);
     }
 
-
     public static Bitmap newBitmap (Bitmap b, String cook){
 
         b = Bitmap.createBitmap(dpToPx(dp_can),dpToPx(dp_can), Bitmap.Config.ARGB_8888);
@@ -47,14 +46,45 @@ public class Graph {
         Connection_Delete_quads quads = new Connection_Delete_quads();
         quads.cookie = cook;
         quads.execute();
-        try{
-            quads.get();
-        } catch (InterruptedException e) {
 
-        } catch (ExecutionException e) {
-
-        }
         return b;
+    }
+
+    public static String getCol (Integer c){
+
+        String col= "";
+
+        switch (c){
+            case 0: col="ff000000";
+                break;
+            case 1: col="ffb97a57";
+                break;
+            case 2: col="ff880016";
+                break;
+            case 3: col="ffed1b24";
+                break;
+            case 4: col="fffeaec9";
+                break;
+            case 5: col="ffff7f26";
+                break;
+            case 6: col="fffef200";
+                break;
+            case 7: col="ffb5e51d";
+                break;
+            case 8: col="ff23b14d";
+                break;
+            case 9: col="ff00a3e8";
+                break;
+            case 10: col="ff3f47cc";
+                break;
+            case 11: col="ff9ad9ea";
+                break;
+            case 12: col="ffa349a3";
+                break;
+            case 13: col="ffffffff";
+                break;
+        }
+        return col;
     }
 
     public static Bitmap getBitmap(float x, float y, Bitmap b, int c, String cookies){
@@ -67,69 +97,28 @@ public class Graph {
         xd = dpToPx((xd/size_pix) * size_pix);
         yd = dpToPx((yd/size_pix) * size_pix);
 
+        String col=getCol(c);
 
+        if (Integer.toHexString(b.getPixel(xd+2,yd+2)) != col) {
+            col = "#"+col;
+            Canvas canvas = new Canvas(b);
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.FILL);
 
-        Canvas canvas = new Canvas(b);
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.parseColor(col));
+            canvas.drawRect(xd + 1, yd + 1, xd + dpToPx(size_pix) - 1, yd + dpToPx(size_pix) - 1, paint);
 
+            if (c < 13) {
+                Connection_Post_quad_paint quad = new Connection_Post_quad_paint();
+                quad.cookie = cookies;
+                quad.urll = "http://croco.us-west-2.elasticbeanstalk.com/api/lobby/quad/" + Integer.toString(number);
+                quad.execute("number=" + Integer.toString(number) + "&color=" + Integer.toString(c));
 
-        switch (c){
-            case 0: paint.setColor(Color.parseColor("#FF000000"));
-                    break;
-            case 1: paint.setColor(Color.parseColor("#FFb97a57"));
-                    break;
-            case 2: paint.setColor(Color.parseColor("#FF880016"));
-                    break;
-            case 3: paint.setColor(Color.parseColor("#FFed1b24"));
-                    break;
-            case 4: paint.setColor(Color.parseColor("#FFfeaec9"));
-                    break;
-            case 5: paint.setColor(Color.parseColor("#FFff7f26"));
-                    break;
-            case 6: paint.setColor(Color.parseColor("#FFfef200"));
-                    break;
-            case 7: paint.setColor(Color.parseColor("#FFb5e51d"));
-                    break;
-            case 8: paint.setColor(Color.parseColor("#FF23b14d"));
-                    break;
-            case 9: paint.setColor(Color.parseColor("#FF00a3e8"));
-                    break;
-            case 10: paint.setColor(Color.parseColor("#FF3f47cc"));
-                    break;
-            case 11: paint.setColor(Color.parseColor("#FF9ad9ea"));
-                    break;
-            case 12: paint.setColor(Color.parseColor("#FFa349a3"));
-                    break;
-            case 13: paint.setColor(Color.parseColor("#FFffffff"));
-                     break;
-        }
-
-        canvas.drawRect(xd+1, yd+1, xd + dpToPx(size_pix)-1, yd+dpToPx(size_pix)-1, paint);
-
-        if (c < 13) {
-            Connection_Post_quad_paint quad = new Connection_Post_quad_paint();
-            quad.cookie = cookies;
-            quad.uuu = "http://croco.us-west-2.elasticbeanstalk.com/api/lobby/quad/"+Integer.toString(number);
-            quad.execute("number=" + Integer.toString(number) + "&color=" + Integer.toString(c));
-            try{
-                quad.get();
-            } catch (InterruptedException e) {
-
-            } catch (ExecutionException e) {
-
-            }
-        }
-        else{
-            Connection_Delete_quad quad = new Connection_Delete_quad();
-            quad.cookie = cookies;
-            quad.uuu = "http://croco.us-west-2.elasticbeanstalk.com/api/lobby/quad/"+Integer.toString(number);
-            quad.execute("number=" + Integer.toString(number) + "&color=" + Integer.toString(c));
-            try{
-                quad.get();
-            } catch (InterruptedException e) {
-
-            } catch (ExecutionException e) {
+            } else {
+                Connection_Delete_quad quad = new Connection_Delete_quad();
+                quad.cookie = cookies;
+                quad.urll = "http://croco.us-west-2.elasticbeanstalk.com/api/lobby/quad/" + Integer.toString(number);
+                quad.execute("number=" + Integer.toString(number) + "&color=" + Integer.toString(c));
 
             }
         }
@@ -146,37 +135,7 @@ public class Graph {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
 
-
-        switch (c){
-            case 0: paint.setColor(Color.parseColor("#FF000000"));
-                break;
-            case 1: paint.setColor(Color.parseColor("#FFb97a57"));
-                break;
-            case 2: paint.setColor(Color.parseColor("#FF880016"));
-                break;
-            case 3: paint.setColor(Color.parseColor("#FFed1b24"));
-                break;
-            case 4: paint.setColor(Color.parseColor("#FFfeaec9"));
-                break;
-            case 5: paint.setColor(Color.parseColor("#FFff7f26"));
-                break;
-            case 6: paint.setColor(Color.parseColor("#FFfef200"));
-                break;
-            case 7: paint.setColor(Color.parseColor("#FFb5e51d"));
-                break;
-            case 8: paint.setColor(Color.parseColor("#FF23b14d"));
-                break;
-            case 9: paint.setColor(Color.parseColor("#FF00a3e8"));
-                break;
-            case 10: paint.setColor(Color.parseColor("#FF3f47cc"));
-                break;
-            case 11: paint.setColor(Color.parseColor("#FF9ad9ea"));
-                break;
-            case 12: paint.setColor(Color.parseColor("#FFa349a3"));
-                break;
-            case 13: paint.setColor(Color.parseColor("#FFffffff"));
-                break;
-        }
+        paint.setColor(Color.parseColor("#"+getCol(c)));
         canvas.drawRect(dpToPx(x)+1, dpToPx(y)+1, x + dpToPx(8)-1, y+dpToPx(8)-1, paint);
 
         return b;

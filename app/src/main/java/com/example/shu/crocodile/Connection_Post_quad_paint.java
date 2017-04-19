@@ -15,7 +15,7 @@ public class Connection_Post_quad_paint  extends AsyncTask<String, Void, Void> {
 
     HttpURLConnection c;        //объект соединения
     String cookie;              //строка куки (определяется вне класса!!!)
-    String uuu;
+    String urll;
 
     @Override
     protected Void doInBackground(String... params) {
@@ -27,7 +27,7 @@ public class Connection_Post_quad_paint  extends AsyncTask<String, Void, Void> {
             for (String k : params) {
 
                 //определить метод (GET/POST), задать куки, размер передаваемого запроса, свойства (?)
-                url = new URL(uuu);
+                url = new URL(urll);
                 c = (HttpURLConnection) url.openConnection();
                 c.setRequestMethod("POST");
                 c.setRequestProperty("Content-Length", "" + Integer.toString(k.getBytes().length));
