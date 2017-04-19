@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -112,7 +113,7 @@ public class Crocodile extends AppCompatActivity {
                 getPlayerRole.cookie = cookies;
                 getPlayerRole.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/role.json");
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                     result_queue = getPlayerRole.get();
                 } catch (InterruptedException e) {
                     result_queue = "-1";

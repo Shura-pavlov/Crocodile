@@ -129,17 +129,41 @@ public class Graph {
 
     public static Bitmap getUserBitmap (Bitmap b, Integer n, Integer c){
 
-        int y = n/count_pix*8;
-        int x = n%count_pix*8;
+        int y = dpToPx((n/count_pix)*8);
+        int x = dpToPx((n%count_pix)*8);
 
         Canvas canvas = new Canvas(b);
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
 
         paint.setColor(Color.parseColor("#"+getCol(c)));
-        canvas.drawRect(dpToPx(x)+1, dpToPx(y)+1, x + dpToPx(8)-1, y+dpToPx(8)-1, paint);
+        canvas.drawRect(x+1, y+1, x + dpToPx(8)-1, y+dpToPx(8)-1, paint);
 
         return b;
     }
+
+    public static Bitmap getNewUserBitmap (Bitmap b) {
+
+        b = Bitmap.createBitmap(dpToPx(160), dpToPx(160), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(b);
+        canvas.drawColor(Color.DKGRAY);
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.WHITE);
+
+        int x = 0;
+        for (int i = 0; i < count_pix; i++) {
+            int y = 0;
+            for (int j = 0; j < count_pix; j++) {
+                canvas.drawRect(x + 1, y + 1, x + dpToPx(8) - 1, y + dpToPx(8) - 1, paint);
+                y += dpToPx(8);
+            }
+            x += dpToPx(8);
+        }
+
+        return b;
+    }
+
 
 }
