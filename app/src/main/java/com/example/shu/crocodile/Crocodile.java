@@ -2,6 +2,7 @@ package com.example.shu.crocodile;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -49,9 +50,9 @@ public class Crocodile extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //вывод (проверка)
+        /*//вывод (проверка)
         TextView text = (TextView)findViewById(R.id.textView5);
-        text.setText(result_id);
+        text.setText(result_id);*/
     }
 /*
 тест активити
@@ -110,8 +111,8 @@ public class Crocodile extends AppCompatActivity {
                 Connectional_Get_Role getPlayerRole = new Connectional_Get_Role();
                 getPlayerRole.cookie = cookies;
                 getPlayerRole.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/role.json");
-
                 try {
+                    Thread.sleep(1000);
                     result_queue = getPlayerRole.get();
                 } catch (InterruptedException e) {
                     result_queue = "-1";
@@ -128,6 +129,9 @@ public class Crocodile extends AppCompatActivity {
                    e.printStackTrace();
                 }
             }
+
+
+
                 switch(Integer.parseInt(result_queue)){
                     case 2:{
                         Intent intent = new Intent(Crocodile.this, UserActivity.class);
@@ -144,9 +148,9 @@ public class Crocodile extends AppCompatActivity {
                 }
 
 
-            //вывод (проверка)
+            /*//вывод (проверка)
             TextView text = (TextView) findViewById(R.id.textView5);
-            text.setText(result_queue);
+            text.setText(result_queue);*/
         }else{
             name.setHint("Некорректное имя");
         }
