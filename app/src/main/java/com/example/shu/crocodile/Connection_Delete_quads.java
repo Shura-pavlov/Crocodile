@@ -10,10 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by shu on 19.04.17.
- */
-
+//удалить холст с сервера
 public class Connection_Delete_quads   extends AsyncTask<Void, Void, Void> {
 
     HttpURLConnection c;        //объект соединения
@@ -50,7 +47,7 @@ public class Connection_Delete_quads   extends AsyncTask<Void, Void, Void> {
                 if(c.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     is = c.getInputStream();
-
+                    //вроде работает.
                     byte[] buffer = new byte[2];
                     int bytesRead;
 

@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
+//файл активити чата+список игроков+холст для отгадывающих
 public class UserActivity extends AppCompatActivity {
 
     String cookies;
@@ -24,13 +25,27 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        //взять куки с активити
         Intent intent = getIntent();
         cookies = intent.getStringExtra("cook");
 
+        //отрисовать начальную разметку карты
         Bitmap b = null;
         b = Graph.getNewUserBitmap(b);
         ImageView imageUser = (ImageView)findViewById(R.id.imageView2);
         imageUser.setImageBitmap(b);
+
+        /*
+        Была идея сделать фон опять через цикл, но это непрактично и глупо
+
+        цикл завершается в тот момент, когда от какого либо пользователя получается роль 4 - победитель.
+
+        Упорные предпринятые попытки не увенчались успехом
+        крашится при загрузке layout. почему - неизвестно
+        Однако функции отрисовки холста проверены, правильно должен отрисовывать холст
+        Загрузку сообщения и списка игроков еще предстоит написать, но по сути механизм ничем не отличается от
+        загрузки quads и далее.
+
 
         String winnerUser=null;
 
@@ -54,9 +69,11 @@ public class UserActivity extends AppCompatActivity {
                 Boolean quadsRemoved = json.getBoolean("quadsRemoved");
                 JSONArray messages = json.getJSONArray("quadsRemoved");
 
+                //загрузка quads
                 JSONArray quads = json.getJSONArray("quads");
 
-                if (false) {//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //отрисовка холста для отгадывающих
+                if (quadsRemoved) {
                     for (int i = 0; i < 400; i++) {
                         b = Graph.getNewUserBitmap(b);
                     }
@@ -78,6 +95,6 @@ public class UserActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 }

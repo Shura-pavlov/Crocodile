@@ -2,19 +2,17 @@ package com.example.shu.crocodile;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
+//активити начального окна
 public class Crocodile extends AppCompatActivity {
 
     String cookies;     //строка куки
@@ -107,6 +105,10 @@ public class Crocodile extends AppCompatActivity {
             getQueuePlayer.execute();
 
 
+
+            //ужасно стыдно, говно полное, но с фоновым выполнением так и не разобрался
+            //можно добавить анимацию загрузки/баннер или тип того на время ожидания
+            //также необходимо сделать кнопку неактивной после первого нажатия, иначе - вылет
             String result_queue = "0";
             while (Integer.parseInt(result_queue) < 2 ){
                 Connectional_Get_Role getPlayerRole = new Connectional_Get_Role();
@@ -132,7 +134,7 @@ public class Crocodile extends AppCompatActivity {
             }
 
 
-
+                //передача куки в другие активити
                 switch(Integer.parseInt(result_queue)){
                     case 2:{
                         Intent intent = new Intent(Crocodile.this, UserActivity.class);
@@ -153,6 +155,7 @@ public class Crocodile extends AppCompatActivity {
             TextView text = (TextView) findViewById(R.id.textView5);
             text.setText(result_queue);*/
         }else{
+
             name.setHint("Некорректное имя");
         }
     }

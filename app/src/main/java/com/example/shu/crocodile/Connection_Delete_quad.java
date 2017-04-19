@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+//удалить квадрат
 public class Connection_Delete_quad   extends AsyncTask<String, Void, Void> {
 
     HttpURLConnection c;        //объект соединения

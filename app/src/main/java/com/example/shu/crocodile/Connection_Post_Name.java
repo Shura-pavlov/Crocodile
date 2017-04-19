@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+//отправить имя игрока
 public class Connection_Post_Name extends AsyncTask<String, Void, Void> {
 
     HttpURLConnection c;        //объект соединения
@@ -48,7 +49,7 @@ public class Connection_Post_Name extends AsyncTask<String, Void, Void> {
                 if(c.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     is = c.getInputStream();
-
+                    //вроде работает.
                     byte[] buffer = new byte[2];
                     int bytesRead;
 

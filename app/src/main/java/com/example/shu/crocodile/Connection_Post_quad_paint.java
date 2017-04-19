@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+//нарисовать квадрат
 public class Connection_Post_quad_paint  extends AsyncTask<String, Void, Void> {
 
     HttpURLConnection c;        //объект соединения

@@ -18,11 +18,11 @@ import java.util.concurrent.ExecutionException;
 
 public class ArtistActivity extends AppCompatActivity implements View.OnTouchListener {
 
-    String cookies;
-    ImageView image;
-    float mX, mY;
-    Bitmap bitmap = null;
-    int colour = 0;
+    String cookies;     //куки
+    ImageView image;    //инициализация холста
+    float mX, mY;       //координаты касания
+    Bitmap bitmap = null;   //изображение
+    int colour = 0;         //код цвета
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +30,11 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
         setContentView(R.layout.activity_artist);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        //взять куки из crocodile
         Intent intent = getIntent();
         cookies = intent.getStringExtra("cook");
 
+        //получить слово
         Connection_Get_keyword getKeyword = new Connection_Get_keyword();
         getKeyword.cookie = cookies;
         getKeyword.execute("http://croco.us-west-2.elasticbeanstalk.com/api/lobby/keyword.json");
@@ -55,9 +57,11 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
             e.printStackTrace();
         }
 
+        //вывод слова
         TextView text = (TextView)findViewById(R.id.textView2);
         text.setText(result_keyword);
 
+        //начальная отрисовка сетки холста, его постановка на форму и листнер касания
         image = (ImageView)findViewById(R.id.imageView);
         bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
@@ -66,11 +70,12 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
     }
 
     public boolean onTouch(View v, MotionEvent event) {
-
+        //если касаться пальцем
         if(MotionEvent.ACTION_DOWN == event.getAction()) {
             mX = event.getX();
             mY = event.getY();
 
+            //функция отрисовки квадрата
             bitmap = Graph.getBitmap(mX, mY, bitmap, colour, cookies);
             image.setImageBitmap(bitmap);
         }
@@ -134,7 +139,7 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
     }
 
     public void onClick_clear(View view) {
-
+        //удаление всего холста
         bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
 

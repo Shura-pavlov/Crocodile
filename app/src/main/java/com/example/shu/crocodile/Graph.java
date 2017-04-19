@@ -6,23 +6,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import java.util.concurrent.ExecutionException;
-
-
+//файл отрисовки хослтов
 public class Graph {
 
-    public static int count_pix = 20;
-    public static int dp_can = 340;
-    public static int size_pix = dp_can/count_pix;
+    public static int count_pix = 20;       //количество квадратов в линии
+    public static int dp_can = 340;         //размер холста
+    public static int size_pix = dp_can/count_pix;  //размер квадрата
 
+    //перевод dp в пиксели
     public static int dpToPx(int dp){
         return(int)(dp* Resources.getSystem().getDisplayMetrics().density);
     }
 
+    //перевод пикселей в dp
     public static int pxToDp(float px){
         return(int)(px / Resources.getSystem().getDisplayMetrics().density);
     }
 
+    //создание разметки нового холста (художник)
     public static Bitmap newBitmap (Bitmap b, String cook){
 
         b = Bitmap.createBitmap(dpToPx(dp_can),dpToPx(dp_can), Bitmap.Config.ARGB_8888);
@@ -50,6 +51,7 @@ public class Graph {
         return b;
     }
 
+    //получение кода цвета
     public static String getCol (Integer c){
 
         String col= "";
@@ -87,6 +89,7 @@ public class Graph {
         return col;
     }
 
+    //отрисовка квадрата (художник)
     public static Bitmap getBitmap(float x, float y, Bitmap b, int c, String cookies){
 
         int xd = pxToDp(x);
@@ -127,6 +130,7 @@ public class Graph {
         return b;
     }
 
+    //отрисовка квадрата (отгадывающий)
     public static Bitmap getUserBitmap (Bitmap b, Integer n, Integer c){
 
         int y = dpToPx((n/count_pix)*8);
@@ -142,6 +146,7 @@ public class Graph {
         return b;
     }
 
+    //отрисовка разметки холста
     public static Bitmap getNewUserBitmap (Bitmap b) {
 
         b = Bitmap.createBitmap(dpToPx(160), dpToPx(160), Bitmap.Config.ARGB_8888);

@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+//получить слово
 public class Connection_Get_keyword extends AsyncTask<String, Void, String> {
 
     HttpURLConnection c;    //объект соединения
@@ -35,7 +36,7 @@ public class Connection_Get_keyword extends AsyncTask<String, Void, String> {
             //если код == 200
             if (c.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 InputStream in = new BufferedInputStream(c.getInputStream());
-
+                //работает.
                 BufferedReader read = new BufferedReader(new InputStreamReader(in));
                 String line;
                 while ((line = read.readLine()) != null) {

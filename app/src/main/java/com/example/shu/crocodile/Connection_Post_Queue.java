@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+//поставить игрока в очередь
 public class Connection_Post_Queue extends AsyncTask<Void, Void, String> {
 
     HttpURLConnection c;        //объект соединения
@@ -47,7 +48,7 @@ public class Connection_Post_Queue extends AsyncTask<Void, Void, String> {
             if(c.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 is = c.getInputStream();
-
+                //вроде работает.
                 byte[] buffer = new byte[2];
                 int bytesRead;
 
