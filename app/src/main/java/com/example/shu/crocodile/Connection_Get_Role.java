@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 //проверить статус роли игрока
-public class Connectional_Get_Role  extends AsyncTask<String, Void, String> {
+public class Connection_Get_Role  extends AsyncTask<String, Void, String> {
 
     HttpURLConnection c;    //объект соединения
     String cookie;          //строка куки (определяется вне класса!!!)

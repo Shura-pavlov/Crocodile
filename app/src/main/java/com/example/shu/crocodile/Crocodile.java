@@ -1,21 +1,30 @@
 package com.example.shu.crocodile;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 //активити начального окна
 public class Crocodile extends AppCompatActivity {
 
     String cookies;     //строка куки
+    String result_queue = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +41,7 @@ public class Crocodile extends AppCompatActivity {
         try{
             result_id = getPlayerId.get();
             cookies = getPlayerId.cookie;   //сохранение куки
+
         }
         catch(InterruptedException e){
             result_id = "error_Interrupted_Croco";
@@ -40,7 +50,7 @@ public class Crocodile extends AppCompatActivity {
             result_id = "error2_Execution_Croco";
         }
 
-        //JSON вывод параметра в String
+        /*//JSON вывод параметра в String
         try {
             //id игрока
             JSONObject json = new JSONObject(result_id);
@@ -49,34 +59,26 @@ public class Crocodile extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        /*//вывод (проверка)
+        //вывод (проверка)
         TextView text = (TextView)findViewById(R.id.textView5);
         text.setText(result_id);*/
     }
-/*
-тест активити
-    public void onClickArtistTest(View view) {
-        Intent intent = new Intent(Crocodile.this, ArtistActivity.class);
-        startActivity(intent);
-    }
 
-    public void onClickUserTest(View view) {
-        Intent intent = new Intent(Crocodile.this, UserActivity.class);
-        startActivity(intent);
-    }
-*/
     public void onClick_start(View view) throws ExecutionException, InterruptedException {
 
         //проверка введенного имени
         EditText name = (EditText)findViewById(R.id.editText);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
         if((name.getText().toString() != "") & (name.getText().length() >= 3)) {
-
+            Button b = (Button)findViewById(R.id.button);
+            b.setClickable(false);
             //запрос на отправку имени игрока
             Connection_Post_Name setPlayerName = new Connection_Post_Name();
             setPlayerName.cookie = cookies;     //определение куки
             setPlayerName.execute(name.getText().toString());
 
-            //запрос на получении имени игрока (проверка)
+            /*//запрос на получении имени игрока (проверка)
             Connection_Get_Name getPlayerName = new Connection_Get_Name();
             getPlayerName.cookie = cookies;     //определение куки
             getPlayerName.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/name.json");
@@ -97,66 +99,69 @@ public class Crocodile extends AppCompatActivity {
                 result_name = json.getString("name");
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            }*/
 
-
+            //встать в очередь
             Connection_Post_Queue getQueuePlayer = new Connection_Post_Queue();
             getQueuePlayer.cookie = cookies;
             getQueuePlayer.execute();
 
 
+            //туаймер задания проверки роли игрока (каждые 300 мс)
+            final Timer myTymer = new Timer();
+            myTymer.schedule(new TimerTask() {
+                                 @Override
+                                 public void run() {
+                                     Connection_Get_Role getPlayerRole = new Connection_Get_Role();
+                                     getPlayerRole.cookie = cookies;
+                                     getPlayerRole.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/role.json");
+                                     try {
+                                         result_queue = getPlayerRole.get();
+                                     } catch (InterruptedException e) {
+                                         result_queue = "-1";
+                                     } catch (ExecutionException e) {
+                                         result_queue = "-2";
+                                     }
 
-            //ужасно стыдно, говно полное, но с фоновым выполнением так и не разобрался
-            //можно добавить анимацию загрузки/баннер или тип того на время ожидания
-            //также необходимо сделать кнопку неактивной после первого нажатия, иначе - вылет
-            String result_queue = "0";
-            while (Integer.parseInt(result_queue) < 2 ){
-                Connectional_Get_Role getPlayerRole = new Connectional_Get_Role();
-                getPlayerRole.cookie = cookies;
-                getPlayerRole.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/role.json");
-                try {
-                    Thread.sleep(100);
-                    result_queue = getPlayerRole.get();
-                } catch (InterruptedException e) {
-                    result_queue = "-1";
-                } catch (ExecutionException e) {
-                    result_queue = "-2";
-                }
+                                     //JSON вывод параметра в String
+                                     try {
+                                         //роль игрока
+                                         JSONObject json = new JSONObject(result_queue);
+                                         result_queue = json.getString("roleCode");
+                                     } catch (JSONException e) {
+                                         e.printStackTrace();
+                                     }
 
-                //JSON вывод параметра в String
-                try {
-                   //роль игрока
-                   JSONObject json = new JSONObject(result_queue);
-                    result_queue = json.getString("roleCode");
-                } catch (JSONException e) {
-                   e.printStackTrace();
-                }
-            }
+                                     if (Integer.parseInt(result_queue) > 1 ){
+                                         switch (Integer.parseInt(result_queue)){
+                                             case 2:{
+                                                 Intent intent = new Intent(Crocodile.this, UserActivity.class);
+                                                 intent.putExtra("cook",cookies);
+                                                 startActivity(intent);
+                                                 finish();
+                                                 break;
+                                             }
+                                             case 3:{
+                                                 Intent intent = new Intent(Crocodile.this, ArtistActivity.class);
+                                                 intent.putExtra("cook",cookies);
+                                                 startActivity(intent);
+                                                 finish();
+                                                 break;
+                                             }
+                                         }
+                                         myTymer.cancel();
+                                     }
+                                 }
+                             },0L,300L);
 
-
-                //передача куки в другие активити
-                switch(Integer.parseInt(result_queue)){
-                    case 2:{
-                        Intent intent = new Intent(Crocodile.this, UserActivity.class);
-                        intent.putExtra("cook",cookies);
-                        startActivity(intent);
-                        break;
-                    }
-                    case 3:{
-                        Intent intent = new Intent(Crocodile.this, ArtistActivity.class);
-                        intent.putExtra("cook",cookies);
-                        startActivity(intent);
-                        break;
-                    }
-                }
-
-
-            /*//вывод (проверка)
-            TextView text = (TextView) findViewById(R.id.textView5);
-            text.setText(result_queue);*/
+            TextView text = (TextView)findViewById(R.id.textView5);
+            text.setText("Стоим в очереди. Ждём-с");
         }else{
-
-            name.setHint("Некорректное имя");
+            AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
+            quitDialog.setTitle("Некорректное имя");
+            quitDialog.setPositiveButton("Понял", null);
+            name.setText("");
+            quitDialog.show();
         }
     }
 }

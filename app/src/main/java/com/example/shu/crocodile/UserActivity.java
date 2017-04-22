@@ -1,8 +1,10 @@
 package com.example.shu.crocodile;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -96,5 +98,30 @@ public class UserActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }*/
+    }
+
+
+    //обработчик нажатия кнопку "назад"
+    public void onBackPressed(){
+        openQuitDialog();
+    }
+
+    //диалог выхода
+    public void openQuitDialog(){
+        AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
+        quitDialog.setTitle("Текущая сессия будет потеряна: вы уверены?");
+        quitDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(UserActivity.this, Crocodile.class));
+                finish();
+            }
+        });
+        quitDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        });
+
+        quitDialog.show();
     }
 }

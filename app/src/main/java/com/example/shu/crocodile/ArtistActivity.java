@@ -1,8 +1,10 @@
 package com.example.shu.crocodile;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -143,5 +145,29 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
         bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
 
+    }
+
+    //обработчик нажатия кнопку "назад"
+    public void onBackPressed(){
+        openQuitDialog();
+    }
+
+    //диалог выхода
+    public void openQuitDialog(){
+        AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
+        quitDialog.setTitle("Текущая сессия будет потряна: вы уверены?");
+        quitDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(ArtistActivity.this, Crocodile.class));
+                finish();
+            }
+        });
+        quitDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        });
+
+        quitDialog.show();
     }
 }
