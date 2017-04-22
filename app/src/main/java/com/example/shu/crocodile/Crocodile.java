@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 public class Crocodile extends AppCompatActivity {
 
     String cookies;     //строка куки
-    String result_queue = "";
+    String result_queue = "";   //строка роли игрока (нужна для проверки в таймере)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +66,18 @@ public class Crocodile extends AppCompatActivity {
 
     public void onClick_start(View view) throws ExecutionException, InterruptedException {
 
-        //проверка введенного имени
-        EditText name = (EditText)findViewById(R.id.editText);
+        //закрытие клавиатура по нажатию на кнопку
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+
+        //проверка введенного имени
+        EditText name = (EditText)findViewById(R.id.editText);
         if((name.getText().toString() != "") & (name.getText().length() >= 3)) {
+
+            //запрет на повторное нажатие кнопки (для открытия лишь одного потока)
             Button b = (Button)findViewById(R.id.button);
             b.setClickable(false);
+
             //запрос на отправку имени игрока
             Connection_Post_Name setPlayerName = new Connection_Post_Name();
             setPlayerName.cookie = cookies;     //определение куки
@@ -101,17 +106,17 @@ public class Crocodile extends AppCompatActivity {
                 e.printStackTrace();
             }*/
 
-            //встать в очередь
+            //запрос на постановку в очередь
             Connection_Post_Queue getQueuePlayer = new Connection_Post_Queue();
             getQueuePlayer.cookie = cookies;
             getQueuePlayer.execute();
 
-
-            //туаймер задания проверки роли игрока (каждые 300 мс)
+            //таймер задания проверки роли игрока (каждые 300 мс)
             final Timer myTymer = new Timer();
             myTymer.schedule(new TimerTask() {
                                  @Override
                                  public void run() {
+                                     //проверка роли игрока
                                      Connection_Get_Role getPlayerRole = new Connection_Get_Role();
                                      getPlayerRole.cookie = cookies;
                                      getPlayerRole.execute("http://croco.us-west-2.elasticbeanstalk.com/api/player/role.json");
@@ -135,6 +140,7 @@ public class Crocodile extends AppCompatActivity {
                                      if (Integer.parseInt(result_queue) > 1 ){
                                          switch (Integer.parseInt(result_queue)){
                                              case 2:{
+                                                 //отгадывающий
                                                  Intent intent = new Intent(Crocodile.this, UserActivity.class);
                                                  intent.putExtra("cook",cookies);
                                                  startActivity(intent);
@@ -142,6 +148,7 @@ public class Crocodile extends AppCompatActivity {
                                                  break;
                                              }
                                              case 3:{
+                                                 //художник
                                                  Intent intent = new Intent(Crocodile.this, ArtistActivity.class);
                                                  intent.putExtra("cook",cookies);
                                                  startActivity(intent);
@@ -157,6 +164,8 @@ public class Crocodile extends AppCompatActivity {
             TextView text = (TextView)findViewById(R.id.textView5);
             text.setText("Стоим в очереди. Ждём-с");
         }else{
+
+            //создание диалога вывода ошибки имени
             AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
             quitDialog.setTitle("Некорректное имя");
             quitDialog.setPositiveButton("Понял", null);
