@@ -1,6 +1,5 @@
 package com.example.shu.crocodile;
 
-
 import android.os.AsyncTask;
 
 import java.io.BufferedInputStream;
@@ -10,8 +9,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-//получить данные обновления для отгадывающих
-public class Connection_Get_Game extends AsyncTask<String, Void, String> {
+//получить список игроков
+public class Connection_Get_Players extends AsyncTask<String, Void, String> {
 
     HttpURLConnection c;    //объект соединения
     String cookie;          //строка куки (определяется вне класса!!!)
