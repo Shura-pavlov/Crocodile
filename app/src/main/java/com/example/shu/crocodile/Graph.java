@@ -136,12 +136,14 @@ public class Graph {
         int y = dpToPx((n/count_pix)*8);
         int x = dpToPx((n%count_pix)*8);
 
-        Canvas canvas = new Canvas(b);
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
+        if (Integer.toHexString(b.getPixel(x+2,y+2)) != getCol(c)) {
+            Canvas canvas = new Canvas(b);
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.FILL);
 
-        paint.setColor(Color.parseColor("#"+getCol(c)));
-        canvas.drawRect(x+1, y+1, x + dpToPx(8)-1, y+dpToPx(8)-1, paint);
+            paint.setColor(Color.parseColor("#" + getCol(c)));
+            canvas.drawRect(x + 1, y + 1, x + dpToPx(8) - 1, y + dpToPx(8) - 1, paint);
+        }
 
         return b;
     }

@@ -4,17 +4,25 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 
@@ -25,6 +33,11 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
     float mX, mY;       //координаты касания
     Bitmap bitmap = null;   //изображение
     int colour = 0;         //код цвета
+    private List<Message> messagesArray = new ArrayList<>();    //список сообщений чата
+
+    //адаптер вывода сообщений чата
+    RVAdapterPainter adapterPainter;
+    private RecyclerView rvPainter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +81,80 @@ public class ArtistActivity extends AppCompatActivity implements View.OnTouchLis
         bitmap = Graph.newBitmap(bitmap, cookies);
         image.setImageBitmap(bitmap);
         image.setOnTouchListener(this);
+
+        rvPainter = (RecyclerView)findViewById(R.id.rv_painter);
+        rvPainter.setHasFixedSize(true);
+        LinearLayoutManager llmp = new LinearLayoutManager(this);
+        rvPainter.setLayoutManager(llmp);
+
+        //таймер задания проверки чата, отрисовки рисунка, (каждые 300 мс)
+        final Handler uiHandler = new Handler();
+        final Timer myTymer = new Timer();
+        myTymer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                //получить данные обновления чата
+                Connection_Get_Messages messages = new Connection_Get_Messages();
+                messages.cookie = cookies;
+                messages.execute("http://croco.us-west-2.elasticbeanstalk.com/api/lobby/messages.json");
+                String result = "0";
+                try {
+                    result = messages.get();
+                } catch (InterruptedException e) {
+                    result = "err";
+                } catch (ExecutionException e) {
+                    result = "err";
+                }
+
+                try {
+
+                    //загрузка JSON данных обновления
+                    JSONObject json_chat = new JSONObject(result);
+                    //загрузка сообщений чата
+                    JSONArray messagesChat = json_chat.getJSONArray("messages");
+
+                    if((messagesChat.length() != messagesArray.size())& (messagesChat.length()!=0)) {
+
+                        //обнуление списка сообщений для обновления
+                        messagesArray = new ArrayList<>();
+
+                        for (int i = 0; i < messagesChat.length(); i++) {
+
+                            JSONObject message = messagesChat.getJSONObject(i);
+
+                            final int number = message.getInt("number");
+                            final String sender = message.getString("sender");
+                            final String text = message.getString("text");
+                            final Boolean mark;
+                            if (message.isNull("marked")){
+                                mark = null;
+                            }
+                            else{
+                                mark = message.getBoolean("marked");
+                            }
+
+                            //добавление в список сообщений чата загруженное сообщение чата
+                            // (в начало для корректного отображения)
+                            messagesArray.add(0, new Message(number, sender, text, mark));
+                        }
+
+                        //вывод в область сообщений чата список сообщений чата через адаптер вывода сообщений чата
+                        uiHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapterPainter = new RVAdapterPainter(messagesArray, cookies);
+                                rvPainter.setAdapter(adapterPainter);
+                            }
+                        });
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        },0L,500L);
 
     }
 

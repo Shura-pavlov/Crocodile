@@ -27,7 +27,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 
-
 //файл активити чата+список игроков+холст для отгадывающих
 public class UserActivity extends AppCompatActivity {
 
@@ -38,13 +37,12 @@ public class UserActivity extends AppCompatActivity {
     private List<String> namesArray = new ArrayList<>();
 
     //адаптер вывода сообщений чата
-    RVAdapter adapter;
+    RVAdapterUsers adapter;
     private RecyclerView rv;
 
     //адаптер вывода имен игроков
     RVAdapterPlayers adapterPlayers;
     private RecyclerView rv_players;
-
 
     //под куки
     String cookies;
@@ -109,7 +107,6 @@ public class UserActivity extends AppCompatActivity {
 
                     //проверка художника
                     if (json_players.isNull("painter")){
-                        //TODO разобраться, неадекватное поведение, вылеты
                         myTymer.cancel();
                         uiHandler.post(new Runnable() {
                             @Override
@@ -117,12 +114,9 @@ public class UserActivity extends AppCompatActivity {
                                 openQuitDialogNoPainter();
                             }
                         });
-
-
                     }
                     else{
                         //добавление художника в общий список имен игроков
-                        //TODO добавить иконку художника
 
                         //загрузка информации по художнику
                         JSONObject painter = json_players.getJSONObject("painter");
@@ -137,7 +131,6 @@ public class UserActivity extends AppCompatActivity {
 
                     for(int i =0; i<guessers.length(); i++){
 
-                        //TODO добавить иконку отгадывающего
                         JSONObject player = guessers.getJSONObject(i);
                         final String id_player = player.getString("id");
                         final String name_player = player.getString("name");
@@ -156,7 +149,37 @@ public class UserActivity extends AppCompatActivity {
 
                     //проверка на победителя
                     if (!json_players.isNull("winner")){
-                        //TODO сделать игру завершаемой
+                        JSONObject winner = json_players.getJSONObject("winner");
+                        final String name_winner = winner.getString("name");
+
+                        //получить слово
+                        Connection_Get_keyword getKeyword = new Connection_Get_keyword();
+                        getKeyword.cookie = cookies;
+                        getKeyword.execute("http://croco.us-west-2.elasticbeanstalk.com/api/lobby/keyword.json");
+
+                        String result_keyword;
+                        try{
+                            result_keyword = getKeyword.get();
+                        } catch (InterruptedException e) {
+                            result_keyword = "err";
+                        } catch (ExecutionException e) {
+                            result_keyword = "err";
+                        }
+
+
+                        //слово художника
+                        JSONObject json = new JSONObject(result_keyword);
+                        final String keyword = json.getString("keyword");
+
+
+                        myTymer.cancel();
+                        uiHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                openQuitDialogWinner(name_winner, keyword);
+                            }
+                        });
+
                     }
 
                 } catch (JSONException e) {
@@ -184,8 +207,6 @@ public class UserActivity extends AppCompatActivity {
                     Boolean quadsRemoved = json.getBoolean("quadsRemoved");
                     //загрузка сообщений чата
                     JSONArray messages = json.getJSONArray("messages");
-                    //загрузка массива нарисованных квадратов
-                    JSONArray quads = json.getJSONArray("quads");
 
                     if((messages.length() != messagesArray.size())& (messages.length()!=0)) {
 
@@ -216,7 +237,7 @@ public class UserActivity extends AppCompatActivity {
                         uiHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                adapter = new RVAdapter(messagesArray);
+                                adapter = new RVAdapterUsers(messagesArray, cookies);
                                 rv.setAdapter(adapter);
                             }
                         });
@@ -224,20 +245,15 @@ public class UserActivity extends AppCompatActivity {
 
 
                     //отрисовка холста для отгадывающих
-
-                    //удаление всего рисунка (вызов очистки холста художником)
+                    //загрузка массива нарисованных квадратов
+                    JSONArray quads = json.getJSONArray("quads");
+                    //удаление какого-либо квадрата
                     if (quadsRemoved) {
                         b = Graph.getNewUserBitmap(b);
-                        uiHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                imageUser.setImageBitmap(b);
-                            }
-                        });
                     }
-                    else {
                         //стирание изображения для обновления рисунка
-                        b = Graph.getNewUserBitmap(b);
+                        //b = Graph.getNewUserBitmap(b);
+                    if (!json.isNull("quads")){
                         for (int i = 0; i < quads.length(); i++) {
 
                             JSONObject quad = quads.getJSONObject(i);
@@ -246,7 +262,7 @@ public class UserActivity extends AppCompatActivity {
                             final int colorQuad = quad.getInt("color");
 
                             b = Graph.getUserBitmap(b, numberQuad, colorQuad);
-
+                        }
                             //вывод изображения
                             uiHandler.post(new Runnable() {
                                 @Override
@@ -256,34 +272,12 @@ public class UserActivity extends AppCompatActivity {
                             });
                         }
 
-
-                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                /*if (Integer.parseInt(result_queue) > 1 ){
-                    switch (Integer.parseInt(result_queue)){
-                        case 2:{
-                            Intent intent = new Intent(Crocodile.this, UserActivity.class);
-                            intent.putExtra("cook",cookies);
-                            startActivity(intent);
-                            finish();
-                            break;
-                        }
-                        case 3:{
-                            Intent intent = new Intent(Crocodile.this, ArtistActivity.class);
-                            intent.putExtra("cook",cookies);
-                            startActivity(intent);
-                            finish();
-                            break;
-                        }
-                    }
-                    myTymer.cancel();
-                }*/
             }
         },0L,500L);
-        
+
     }
 
     //обработчик нажатия кнопку "назад"
@@ -338,5 +332,21 @@ public class UserActivity extends AppCompatActivity {
         sendMessage.cookie = cookies;     //определение куки
         sendMessage.execute(text.getText().toString());
         text.setText("");
+    }
+
+    //диалог выхода если игра закончилась
+    public void openQuitDialogWinner(String name, String keyword){
+        AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
+        quitDialog.setTitle("Конец игры");
+        quitDialog.setMessage("Победитель: "+name+"\n\nСлово: "+ keyword);
+        quitDialog.setPositiveButton("Начать новую игру", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(UserActivity.this, Crocodile.class));
+                finish();
+            }
+        });
+
+        quitDialog.show();
     }
 }
